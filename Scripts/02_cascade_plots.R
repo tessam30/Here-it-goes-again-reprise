@@ -26,12 +26,11 @@
 
 # LOAD DATA ============================================================================  
 
-    df_msd <- read_psd(file_path)  %>% 
+    df_msd <- df_genie  %>% 
       fix_mech_names() %>% 
       mutate(snu1 = str_remove_all(snu1, " Province")) %>% 
       clean_agency() %>% 
-      swap_targets() %>% 
-      filter(funding_agency == "USAID")
+      swap_targets()
 
 # CREATE USAID CASCADE ============================================================================
   
