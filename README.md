@@ -4,7 +4,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of Here-it-goes-again-reprise is to ...
+The goal of Here-it-goes-again-reprise is to review FY23 Q2 data. 
 
 
 ---
