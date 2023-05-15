@@ -53,19 +53,30 @@
     
     
     batch_cascade_plot(df_msd %>% filter(mech_name == "DISCOVER-H"),
-                       imgpath = "Images/Cascade/DISCOVER", imgtype =".png")
+                       imgpath = "Images/Cascade/DISCOVER", imgtype = ".png")
     
     batch_cascade_plot(df_msd %>% filter(mech_name == "SAFE"),
-                       imgpath = "Images/Cascade/SAFE", imgtype =".png")
+                       imgpath = "Images/Cascade/SAFE", imgtype = ".png")
     
     batch_cascade_plot(df_msd %>% filter(mech_name == "Action HIV"),
-                       imgpath = "Images/Cascade/ACTION_HIV", imgtype =".png")
+                       imgpath = "Images/Cascade/ACTION_HIV", imgtype = ".png")
     
     batch_cascade_plot(df_msd %>% filter(mech_name == "ZAM Health"),
-                       imgpath = "Images/Cascade/ZAM Health", imgtype =".png")
+                       imgpath = "Images/Cascade/ZAM Health", imgtype = ".png")
     
     batch_cascade_plot(df_msd %>% filter(snu1 == "Copperbelt"), 
                        imgpath = "Images/Cascade/Copperbelt", imgtype = ".png")
+    
+    
+    # Loop over other snus
+    batch_cascade_plot(df_msd %>% filter(snu1 == "Luapula"), 
+                       imgpath = "Images/Cascade/Luapula", imgtype = ".png")
+    
+    batch_cascade_plot(df_msd %>% filter(snu1 == "Muchinga"), 
+                       imgpath = "Images/Cascade/Muchinga", imgtype = ".png")
+    
+    batch_cascade_plot(df_msd %>% filter(snu1 == "Northern"), 
+                       imgpath = "Images/Cascade/Northern", imgtype = ".png")
 
 # Sparkline summaries  ============================================================================
     
