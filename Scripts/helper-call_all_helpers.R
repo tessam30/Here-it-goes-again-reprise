@@ -23,7 +23,8 @@
   # SI specific paths/functions  
     load_secrets()
     merdata <- file.path(glamr::si_path("path_msd"))
-    file_path <- return_latest(folderpath = merdata, pattern = "Genie.*Zambia")
+    file_path <- return_latest(folderpath = merdata, pattern = "Genie-PSNU.*Zambia")
+    site_path <- return_latest(folderpath = merdata, pattern = "Genie-Site.*Zambia")
     
   df_genie <- read_psd(file_path)
     
