@@ -206,3 +206,14 @@
   }
   
   
+# Shrink size of rows in GT tables  
+  shrink_rows <- function(gt_obj){
+    gt_obj %>% 
+      tab_options(
+        data_row.padding = px(1),
+        row_group.padding = px(2),
+        heading.padding = px(1)
+      ) 
+  }  
+  
+  

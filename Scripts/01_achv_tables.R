@@ -60,15 +60,6 @@
         gtsave(path = "Images", filename = glue::glue("{mech_name}_mdb_main.png"))
     }
   
-
-  shrink_rows <- function(gt_obj){
-    gt_obj %>% 
-      tab_options(
-        data_row.padding = px(1),
-        row_group.padding = px(2),
-        heading.padding = px(1)
-      ) 
-  }  
     
 # LOAD DATA ============================================================================  
 
