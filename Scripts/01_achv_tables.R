@@ -63,7 +63,7 @@
     
 # LOAD DATA ============================================================================  
 
-  df_genie <- read_psd(file_path) 
+  df_genie <- read_psd(msd_path) 
   
   df_genie %>% filter(fiscal_year == 2023) %>% count(mech_name, mech_code) %>% prinf()
 
@@ -336,28 +336,28 @@
         style = cell_fill(color = "#ff939a", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] < 0
+          rows = tmp$`_data`[[indic_cols[i]]] < 0.5
         )
       ) %>% 
       tab_style(
         style = cell_fill(color = "#ffcaa2", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] >= 0 &  tmp$`_data`[[indic_cols[i]]] < 0.15
+          rows = tmp$`_data`[[indic_cols[i]]] >= 0.5 &  tmp$`_data`[[indic_cols[i]]] < 0.65
         )
       ) %>% 
       tab_style(
         style = cell_fill(color = "#5BB5D5", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] >= 0.15 &  tmp$`_data`[[indic_cols[i]]] <= 0.35
+          rows = tmp$`_data`[[indic_cols[i]]] >= 0.65 &  tmp$`_data`[[indic_cols[i]]] <= 0.85
         )
       ) %>% 
       tab_style(
         style = cell_fill(color = "#e6e6e6", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] > 0.35
+          rows = tmp$`_data`[[indic_cols[i]]] > 0.85
         )
       ) %>% 
       tab_style(
@@ -424,28 +424,28 @@
         style = cell_fill(color = "#ff939a", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] < 0
+          rows = tmp$`_data`[[indic_cols[i]]] < 0.5
         )
       ) %>% 
       tab_style(
         style = cell_fill(color = "#ffcaa2", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] >= 0 &  tmp$`_data`[[indic_cols[i]]] < 0.15
+          rows = tmp$`_data`[[indic_cols[i]]] >= 0.5 &  tmp$`_data`[[indic_cols[i]]] < 0.65
         )
       ) %>% 
       tab_style(
         style = cell_fill(color = "#5BB5D5", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] >= 0.15 &  tmp$`_data`[[indic_cols[i]]] <= 0.35
+          rows = tmp$`_data`[[indic_cols[i]]] >= 0.65 &  tmp$`_data`[[indic_cols[i]]] <= 0.85
         )
       ) %>% 
       tab_style(
         style = cell_fill(color = "#e6e6e6", alpha = 0.75),
         locations = cells_body(
           columns = indic_cols[i],
-          rows = tmp$`_data`[[indic_cols[i]]] > 0.35
+          rows = tmp$`_data`[[indic_cols[i]]] > 0.85
         )
       ) %>% 
       tab_style(

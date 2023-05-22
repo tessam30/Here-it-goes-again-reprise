@@ -9,14 +9,11 @@
 
 # LOCALS & SETUP ============================================================================
 
-  # Libraries
-    ohaf
-    
   # SI specific paths/functions  
     source("Scripts/helper-call_all_helpers.R")
       
   # Grab metadata
-   get_metadata(file_path)
+   get_metadata(msd_path)
   
   # REF ID for plots
     ref_id <- "45856760"
@@ -42,9 +39,10 @@
         geom_col(aes(y = results_cumulative), fill = scooter, width = 0.75) +
         facet_wrap(enquo(facet_var), nrow = nrows, scales = scale_type) +
         si_style_ygrid(facet_space = 0.25) +
-        scale_x_discrete(labels = c("FY22Q1", "", "", "",
-                                    "FY23Q1", "", "", "")) +
-        scale_y_continuous(labels = comma, expand = c(0, 0))+
+        scale_x_discrete(labels = c("FY21Q1", "", "", "",
+                                    "FY22Q1", "", "", "",
+                                    "FY23Q1", "")) +
+        scale_y_continuous(labels = comma, expand = c(0, 0)) +
         geom_text(data = . %>% filter(qtr_flag == 1 | period == "FY22Q4"), 
                   aes(y = results_cumulative, label = percent(achv, 1)),
                   family = "Source Sans Pro",
@@ -55,7 +53,7 @@
 
 # LOAD DATA ============================================================================  
 
-  df_genie <- df_genie %>% 
+  df_genie <- df_msd %>% 
       fix_mech_names() %>% 
       mutate(snu1 = str_remove_all(snu1, " Province")) %>% 
       clean_agency() %>% 
@@ -166,7 +164,7 @@
 # BY SNU1 & PSNU OVERALL ============================================================================
 
     tx_curr_snu %>%
-      # filter(snu1 %ni% c("Southern", "Eastern")) %>%
+      filter(snu1 %ni% c("Southern", "Eastern")) %>%
       mutate(snu1 = fct_reorder2(snu1, targets, results, .desc = T)) %>%
       group_by(snu1) %>%
       mutate(
@@ -184,12 +182,12 @@
         aes(y = results, fill = tx_curr_trend), width = 0.75
       ) +
       scale_fill_identity() +
-      geom_text(
+      geom_label(
         data = . %>% filter(period == max(period)),
         aes(y = results, label = comma(tx_curr_diff)),
         vjust = 1.2,
         family = "Source Sans Pro",
-        size = 11 / .pt,
+        size = 10 / .pt,
         color = grey90k
       ) +
       labs(
