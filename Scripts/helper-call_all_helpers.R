@@ -26,7 +26,10 @@
     file_path <- return_latest(folderpath = merdata, pattern = "Genie-PSNU.*Zambia")
     site_path <- return_latest(folderpath = merdata, pattern = "Genie-Site.*Zambia")
     
+    msd_path <- return_latest(folderpath = merdata, pattern = "PSNU_IM_FY21-23_20230512.*Zambia")
+    
   df_genie <- read_psd(file_path)
+  df_msd <- read_psd(msd_path) %>% filter(operatingunit == "Zambia")
     
   # Grab metadata
    get_metadata(file_path)

@@ -104,6 +104,9 @@
 
 # SUMMARY TABLES BY USAID OTHER AGENCIES
 
+# SUMMARY TABLES BY AGENCY ------------------------------------------------
+
+
   mdb_df   <- make_mdb_df(df_genie)
   mdb_tbl  <- reshape_mdb_df(mdb_df, metadata$curr_pd)  
   
@@ -112,10 +115,15 @@
   mdb_tbl_tx   <- reshape_mdb_tx_df(mdb_df_tx, metadata$curr_pd)
   
   mdb_tbl %>% 
-    # filter(indicator != "GEND_GBV") %>%
+    filter(indicator %ni% c("GEND_GBV", "KP_PREV", "TB_PREV")) %>%
     create_mdb(ou = "Zambia", type = "main", metadata$curr_pd, metadata$source) %>% 
     shrink_rows() %>% 
-    gtsave_extra(path = "Images", filename = glue::glue("Zambia_{metadata$curr_pd}_mdb_main.png"))  
+    cols_width(
+      indicator2 ~ px(200),
+      contains("achv") ~ px(5),
+      contains("present_z") ~ px(10)
+    ) %>% 
+    gtsave_extra(path = "Images", filename = glue::glue("Zambia_{metadata$curr_pd}_mdb_main_AMARA.png"))  
   
   
   create_mdb(mdb_tbl_tx, ou = "Zambia", type = "treatment", metadata$curr_pd, metadata$source) %>% 
@@ -163,7 +171,20 @@
     mutate(mech_code = "17413", 
            mech_name = "SAFE (with ZIHA Targets)")
   
-  mk_ptr_tbl(df_safe, 17399)
+  
+  # Adjust DISCOVER's tables, they do not report on semi-annual indicators
+  df_disc_achv <- 
+    df_genie %>% 
+    filter(mech_code == 17399) %>% 
+    make_mdb_df() 
+  
+  df_disc_achv %>% 
+    reshape_mdb_df(.,  metadata$curr_pd) %>% 
+    mutate(operatingunit = ifelse(operatingunit == "Global", "DISCOVER", operatingunit)) %>% 
+    create_mdb(ou = "DISCOVER", type = "main", metadata$curr_pd, metadata$source) %>% 
+    gtsave(., path = "Images", filename = glue::glue("DISCOVER_mdb_main.png.png"))  
+  
+
   
 # ZAMBIA OVERALL TABLE
   df_genie %>% 
