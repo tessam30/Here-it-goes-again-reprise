@@ -80,14 +80,14 @@
     df_tx %>%
       filter(
         snu1 %ni% c("Eastern", "Southern"),
-        trendscoarse == "<15") %>% 
+        trendscoarse == "15+") %>% 
       ggplot(aes(period, results, fill = fill_color, alpha = fill_alpha)) +
       geom_col() +
       geom_text(data = . %>% filter(period == max(period)), 
                 aes(label = label_number_si()(results_latest)), 
                 vjust = -.7, color = matterhorn,
                 family = "Source Sans Pro") +
-      facet_wrap(~fct_reorder2(disp_name, period, results), scales = "free_y")+
+      facet_wrap(~fct_reorder2(disp_name, period, results), scales = "free_y") +
       scale_fill_identity() +
       scale_alpha_identity() +
       scale_y_continuous(label = label_number_si()) +

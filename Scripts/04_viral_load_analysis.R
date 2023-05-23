@@ -12,11 +12,11 @@
     source("Scripts/helper-call_all_helpers.R")
   
   # Grab MSD to bind
-    msd_path <- return_latest(folderpath = merdata,
+    msd_path_old <- return_latest(folderpath = merdata,
                           pattern = "PSNU_IM_FY20-23.*Zambia.zip")
 
   # Grab metadata
-    get_metadata(file_path)
+    get_metadata(msd_path)
   
   # Functions  
     mech_names_order <- c("SAFE", "Action HIV", "DISCOVER-H", "ZAM Health")
@@ -43,11 +43,12 @@
 
 # LOAD DATA ============================================================================  
     
-    df_msd <- read_psd(msd_path) %>% 
+    df_msd <- read_psd(msd_path_old) %>% 
       filter(fiscal_year %in% c(2020, 2021), funding_agency == "USAID")
     
     # bind these together b/c we need past TX_CURR to compute VLC
-    df_genie <- df_genie %>% 
+    df_genie <- read_psd(msd_path) %>% 
+      filter(fiscal_year > 2021) %>% 
       bind_rows(df_msd) %>% 
       filter(funding_agency == "USAID") %>% 
       fix_mech_names() %>% 
@@ -112,7 +113,7 @@
                hjust = 0.1, 
                family = "Source Sans Pro Bold") +
       si_style_nolines() +
-      expand_limits(x = c(1, num_pds+2), y = c(0.7,1.05)) +
+      expand_limits(x = c(1, num_pds + 2), y = c(0.7, 1.05)) +
       theme(axis.text.y = element_blank(), 
             axis.text.x = element_blank()) +
       labs(x = NULL, y = NULL)
@@ -128,13 +129,13 @@
       si_style_ygrid() +
       scale_y_continuous(labels = comma, expand = c(0, 0)) +
       coord_cartesian(clip = "off") +
-      expand_limits(x = c(1, num_pds+2)) +
+      expand_limits(x = c(1, num_pds + 2)) +
       labs(x = NULL, y = NULL) +
       annotate("segment", x = num_pds + .45, xend = num_pds + .45, y = end_tx_pvls, yend = end_tx_pvls + gap, 
                color = grey50k, size = 1.2) +
       annotate("text", x = num_pds + .65, y = (gap / 2) + end_tx_pvls, label = "Coverage gap", 
                hjust = 0, size = 12/.pt, family = "Source Sans Pro Black", 
-               color = grey70k)+
+               color = grey70k) +
       annotate("text", x = num_pds + .55, y = end_tx_lag, label = "TX_CURR_LAG2", 
                size = 10/.pt, family = "Source Sans Pro Bold", color = grey70k,
                hjust = 0) +
@@ -192,7 +193,7 @@
                                   "FY23Q1", "")) +
       coord_cartesian(expand = F) +
       #get rid of facet labels
-      theme(strip.text.x = element_blank())+
+      theme(strip.text.x = element_blank()) +
       labs(caption = metadata$caption)
 
     top_ip / bottom_ip + plot_layout(heights = c(1, 3)) +
@@ -217,9 +218,9 @@
       arrange(snu1, period) %>% 
       group_by(snu1) %>% 
       mutate(tx_curr_lag2 = lag(tx_curr, n = 2),
-             vlc = tx_pvls_d/tx_curr_lag2,
+             vlc = tx_pvls_d / tx_curr_lag2,
              vls = tx_pvls / tx_pvls_d,
-             vls_adj = tx_pvls /tx_curr_lag2) %>% 
+             vls_adj = tx_pvls / tx_curr_lag2) %>% 
       ungroup()
     
     
@@ -276,7 +277,7 @@
       mutate(tx_curr_lag2 = lag(tx_curr, n = 2),
              vlc = tx_pvls_d/tx_curr_lag2,
              vls = tx_pvls / tx_pvls_d,
-             vls_adj = tx_pvls /tx_curr_lag2) %>% 
+             vls_adj = tx_pvls / tx_curr_lag2) %>% 
       ungroup() %>% 
       filter(period == max(period))
     
@@ -291,7 +292,7 @@
     df_usaid_vl <- df_vl %>% 
       summarise(vlc = sum(tx_pvls_d, na.rm = TRUE)/sum(tx_curr_lag2, na.rm = TRUE),
                 vls = sum(tx_pvls, na.rm = TRUE) / sum(tx_pvls_d, na.rm = TRUE),
-                vls_adj = sum(tx_pvls, na.rm = TRUE) /sum(tx_curr_lag2, na.rm = TRUE))
+                vls_adj = sum(tx_pvls, na.rm = TRUE) / sum(tx_curr_lag2, na.rm = TRUE))
     
     
     df_vl %>% 
