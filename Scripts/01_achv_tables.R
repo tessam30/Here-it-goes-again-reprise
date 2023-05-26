@@ -130,6 +130,9 @@
     bold_column(., metadata$curr_pd %>% substr(., 5, 6)) %>% 
     embiggen() %>% 
     shrink_rows() %>% 
+    tab_source_note(
+      source_note = md("**TX_CURR NOTE:** South Africa has no MMD program and has been excluded from TX_CURR and MMMD calculations")
+    )
     gtsave_extra(., path = "Images", filename = glue::glue("{metadata$curr_pd}_Zambia_MMD_VL_MD.png"))  
   
 

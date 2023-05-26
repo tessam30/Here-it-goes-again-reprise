@@ -10,6 +10,9 @@
 
   # Libraries
   source("Scripts/helper-call_all_helpers.R")
+
+  library(gt)
+  library(gtExtras)
   
   # Grab metadata
   get_metadata(msd_path)
@@ -88,7 +91,11 @@ df_genie <- read_psd(msd_path)
   si_save(glue("Images/ZMB_{metadata$curr_pd}_kp_achv_by_disag_tx.png"))
   
   
-  num_pds <- df_kp_vl %>% filter(period >= "FY22Q1") %>% distinct(period) %>% count() %>% pull()
+  num_pds <- df_kp_vl %>% 
+    filter(period >= "FY22Q1") %>% 
+    distinct(period) %>% 
+    count() %>% 
+    pull()
   
   df_kp_vl %>% 
     filter(period >= "FY22Q1") %>% 
@@ -187,8 +194,23 @@ df_genie <- read_psd(msd_path)
              indicator == "PrEP_NEW" ~ "#AA4499"
            )) %>% 
     filter(funding_agency %in% c("CDC", "USAID"))
-  
-  # VIZ ============================================================================
+
+  df_kp_ip <- 
+    df_kp %>% 
+    filter(funding_agency == "USAID") %>% 
+    munge_kp(mech_name, mech_code, snu1) %>%
+    filter(otherdisaggregate == "People in prisions") %>% 
+    fix_mech_names() %>% 
+    mutate(indicator = fct_relevel(indicator, c("KP_PREV", "HTS_TST", "HTS_TST_POS", "HTS_TST_NEG", "PrEP_NEW")),
+           indic_color = case_when(
+             indicator == "KP_PREV" ~ "#88CCEE",
+             indicator == "HTS_TST" ~ "#DDCC77",
+             indicator == "HTS_TST_POS" ~ "#CC6677",
+             indicator == "HTS_TST_NEG" ~ "#117733",
+             indicator == "PrEP_NEW" ~ "#AA4499"
+           ))
+    
+# VIZ ============================================================================
   
   top <- df_kp_viz %>% 
     filter(otherdisaggregate == "ALL KPs") %>%
@@ -254,10 +276,79 @@ df_genie <- read_psd(msd_path)
   
   si_save(glue("Images/{metadata$curr_fy}_KP_achv_agency.png"), scale = 1.25)
   
-  # SPINDOWN ============================================================================
+# SPINDOWN ============================================================================
   
   top / bottom 
   si_save(glue("Images/{metadata$curr_fy}KP_achv.png"), scale = 1.25)
   
 
+# IP SUMMARY BY People in prisons -----------------------------------------
+  
+  df_kp_ip %>% 
+    filter(str_detect(snu1, "NorthWestern", negate = T)) %>%
+    mutate(snu1 = str_remove_all(snu1, " Province")) %>% 
+    ggplot(aes(y = snu1)) +
+    geom_col(aes(x = targets), fill = grey20k, 
+             position = position_nudge(y = -0.15), width = 0.5) +
+    geom_col(aes(x = cumulative, fill = indic_color), width = 0.5) +
+    geom_errorbar(aes(xmax=targets, xmin=targets), 
+                  width=0.75, 
+                  size = 0.75, 
+                  color= "#ffffff", 
+                  linetype = "dotted") +
+    geom_text(aes(x = cumulative, label = percent(achv, 1)), 
+              size = 10/.pt, 
+              family = "Source Sans Pro", 
+              hjust = 0) +
+    #facet_grid( ~ otherdisaggregate, scales = "free_y", space = "free") +
+    facet_grid(indicator ~ mech_name_short, scales = "free_x", space = "free", switch = "y") +
+    si_style_xgrid(facet_space = 1.1) +
+    scale_fill_identity() +
+    scale_y_discrete(limits = rev) +
+    scale_x_continuous(labels = label_number_si(), position = "top", expand = c(0.15, 0.1)) +
+    labs(x = NULL, y = NULL, title = str_to_upper("PEOPLE IN PRISONS ACHIEVEMENT ACROSS USAID PARTNERS AND INDICATORS"),
+         caption = metadata$caption) +
+    theme(
+      strip.placement = "outside",
+      strip.text = element_text(face = "bold", size = 7, hjust = 0.25)
+    )
+  
+  si_save(glue("Images/{metadata$curr_fy}_KP_achv_partner_prisoners.png"), scale = 1.25)
 
+# Summary table of Agency goals -------------------------------------------
+
+  make_gt_kp <- function(df, indic = "HTS_TST") {
+    df %>% 
+      filter(indicator == indic) %>% 
+      select(-c(standardizeddisaggregate, fiscal_year, indic_color)) %>% 
+      gt(rowname_col = "funding_agency", groupname_col = "otherdisaggregate") %>% 
+      fmt_number(columns = c(targets, cumulative), 
+                 decimals = 0) %>% 
+      fmt_percent(columns = achv, 
+                  decimals = 0) %>% 
+      gt_theme_nytimes() %>% 
+      tab_options(
+        data_row.padding = px(0.5),
+        source_notes.font.size = "small"
+      ) %>% 
+      tab_source_note(
+        source_note = gt::md(glue::glue("{metadata$caption}"))
+      ) %>% 
+      tab_header(
+        title = glue::glue("{indic} FY23 Q2 SUMMARY OF KP RESULTS BY AGENCY")
+      ) %>% 
+      tab_style(
+        style = list(
+          cell_text(weight = 700)
+        ),
+        locations = cells_body(
+          rows = funding_agency == "USAID",
+          columns = everything()
+        )
+      ) 
+  }
+
+  indic_list <- df_kp_agency %>% distinct(indicator) %>% pull()
+  
+  map(indic_list, ~make_gt_kp(df_kp_agency, indic = .x) %>% 
+        gtsave(filename = glue("Images/{.x}_KP_agency_table.png")))
