@@ -26,7 +26,7 @@
 
 # LOAD DATA ============================================================================  
 
-    df_msd <- df_genie  %>% 
+    df_msd <- df_msd  %>% 
       fix_mech_names() %>% 
       mutate(snu1 = str_remove_all(snu1, " Province")) %>% 
       clean_agency() %>% 
