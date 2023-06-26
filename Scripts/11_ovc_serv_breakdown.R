@@ -63,11 +63,14 @@
     
   df_ovc_pstatus <-   df_msd %>% 
     filter(str_detect(indicator, "OVC_SERV"), 
-           str_detect(otherdisaggregate, c("Active|Graduated|Exited|Transf")),
-           standardizeddisaggregate %in% c("Age/Sex/ProgramStatus", "ProgramStatus"),
+           str_detect(otherdisaggregate, c("Active|Graduated|Exited")),
+           standardizeddisaggregate %in% c("Age/Sex/ProgramStatus", "ProgramStatus", 
+                                           "Total Numerator", "Age/Sex/DREAMS", 
+                                             "Age/Sex/Preventive", 
+                                             "Age/Sex/ProgramStatusCaregiver"),
            fiscal_year == metadata$curr_fy) %>% 
     mutate(otherdisaggregate = case_when(
-      str_detect(otherdisaggregate, "Exited|Transf") ~ "Transfer/Exit",
+      str_detect(otherdisaggregate, "Exited") ~ "Exited w/out Graduation",
       TRUE ~ otherdisaggregate
     )) %>%    group_by(fiscal_year, indicator, otherdisaggregate) %>% 
     summarize(across(c(cumulative), sum, na.rm = T)) %>% 
@@ -76,7 +79,7 @@
       str_detect(otherdisaggregate, "Exit") ~ old_rose_light,
       str_detect(otherdisaggregate, "Grad") ~ burnt_sienna_light,
       str_detect(otherdisaggregate, "Active") ~ scooter),
-      disag = fct_relevel(otherdisaggregate, c("Transfer/Exit", "Graduated", "Active")),
+      disag = fct_relevel(otherdisaggregate, c("Exited w/out Graduation", "Graduated", "Active")),
     ) 
 
 # MUNGE ============================================================================
@@ -138,7 +141,7 @@
     labs(x = NULL, y = NULL) +
     scale_y_continuous(expand = c(0, 0), limits = c(0, ub_lim))
   
-  c <- a + b + plot_annotation(title = glue("{metadata$curr_pd} OVC_SERV RESULTS"))
+  c <- a + b + plot_annotation(title = glue("{metadata$curr_pd} OVC_SERV RESULTS ALL AGENCIES ZAMBIA"))
   
 # OVC_ PROGRAM STATUS ============================================================================
 
