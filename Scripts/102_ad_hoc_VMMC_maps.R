@@ -150,7 +150,7 @@
     scale_x_continuous(labels = scales::label_number_si()) +
     si_style(facet_space = 0.75) +
     labs(title = "In FY22, Itezhi-tezhi has the largest achievement gap by percentage, but Mufulira had the largest absolute gap",
-         subtitle = "Graphic includes only PSNUs that fell short of targets (short fall above red circle)",
+         subtitle = "Graphic includes only PSNUs that fell short of targets (shortfall above red circle)",
          caption = glue("{metadata$caption}"),
          y = NULL, x = "VMMC target shortfall")
   
